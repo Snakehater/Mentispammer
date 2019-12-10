@@ -5,10 +5,18 @@ import _thread
 import time
 id = '200724'
 id = input('Id: ')
-voteText = 'nej'
-voteText = input('Text: ')
+voteText = ['nej']
+voteIdx = 0;
+voteText[0] = input('Text: ')
+while True:
+    inputText = input('Add text, press enter without text to proceed: ')
+    if inputText == "":
+        break
+    else:
+        voteText.append(inputText)
 threads = eval(input("Threads: "))
 numberOfRequests = eval(input("Requests: "))
+numberOfRequests *= len(voteText)
 requestCount = 0
 # data = {"question_type":"wordcloud","vote":voteText}
 #{"question_type":"wordcloud","vote":"asdfghjkl"}
@@ -86,13 +94,28 @@ def vote(voteIn):
 def threadFun(threadName):
     # time.sleep(delay)
     global requestCount
+    global voteIdx
+    global voteText
     while requestCount < numberOfRequests:
         requestCount += 1
-        print(str(threadName) + " Requests " + str(requestCount))
-        vote(voteText)
+        if voteIdx == len(voteText):
+            voteIdx = 0
 
-for idx in range(threads):
-    _thread.start_new_thread( threadFun, ("Thread-" + str(idx), ) )
-    time.sleep(0.2)
+        text = voteText[voteIdx]
+        voteIdx += 1
+
+        print(str(threadName) + " Requests " + str(requestCount) + " with " + str(text))
+        vote(text)
+
+def startThreads():
+    for idx in range(threads):
+        _thread.start_new_thread( threadFun, ("Thread-" + str(idx), ) )
+        time.sleep(0.2)
+# def startListThreads(arg):
+#     for idx in range(threads):
+#         _thread.start_new_thread( threadFun, ("Thread-" + str(idx), ) )
+#         time.sleep(0.2)
+
+startThreads()
 while 1:
     pass
