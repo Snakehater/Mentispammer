@@ -7,17 +7,17 @@ Requires:
 <br>
 pip3 install requests
 <br>
-pip3 install grequests;
+pip3 install grequests
 <br>
 
 run with:
 <br>
-python3 bot.py;
+python3 bot.py
 <br>
 <br>
 or:
 <br>
-sh start.sh;
+sh start.sh
 <br>
 <br>
-or if you have python3 set to default just doubble click
+or if you have python3 set to default just double click
