@@ -6,7 +6,7 @@ import time
 id = '200724'
 id = input('Id: ')
 voteText = ['nej']
-voteIdx = 0;
+voteIdx = 0
 voteText[0] = input('Text: ')
 while True:
     inputText = input('Add text, press enter without text to proceed: ')
