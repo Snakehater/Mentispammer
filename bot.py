@@ -18,6 +18,8 @@ threads = eval(input("Threads: "))
 numberOfRequests = eval(input("Requests: "))
 numberOfRequests *= len(voteText)
 requestCount = 0
+requestDoneCount = 0
+scriptAlive = True
 # data = {"question_type":"wordcloud","vote":voteText}
 #{"question_type":"wordcloud","vote":"asdfghjkl"}
 # data_json = json.dumps(data)
@@ -91,11 +93,19 @@ def vote(voteIn):
 
 # vote(voteText)
 
+def checkScriptAlive(threadName):
+    global scriptAlive
+    while True:
+        if requestDoneCount == numberOfRequests:
+            scriptAlive = False;
+            break
+
 def threadFun(threadName):
     # time.sleep(delay)
     global requestCount
     global voteIdx
     global voteText
+    global requestDoneCount
     while requestCount < numberOfRequests:
         requestCount += 1
         if voteIdx == len(voteText):
@@ -106,8 +116,10 @@ def threadFun(threadName):
 
         print(str(threadName) + " Requests " + str(requestCount) + " with " + str(text))
         vote(text)
+        requestDoneCount += 1
 
 def startThreads():
+    _thread.start_new_thread( checkScriptAlive, ("Thread-checkScriptAlive", ) )
     for idx in range(threads):
         _thread.start_new_thread( threadFun, ("Thread-" + str(idx), ) )
         time.sleep(0.2)
@@ -117,5 +129,5 @@ def startThreads():
 #         time.sleep(0.2)
 
 startThreads()
-while 1:
+while scriptAlive:
     pass
