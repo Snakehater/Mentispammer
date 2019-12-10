@@ -20,4 +20,4 @@ or:
 sh start.sh
 <br>
 <br>
-or if you have python3 set to default just double click
+or if you have python3 set to default just double click bot.py
