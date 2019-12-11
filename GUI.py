@@ -89,18 +89,23 @@ def updateTextField(event):
     textField.configure(height=textString.count('\n') + 1)
     textField.update()
 def testTextField(arg):
-    if textField.get()[:-1] == '':
+    if textField.get(1.0, "end")[:-1] == '':
+        textFieldState.configure(text='<- error', fg="#ff0000")
+        textFieldState.update()
         return False
     else:
+        textFieldState.configure(text='<- Ok', fg="#00ff00")
+        textFieldState.update()
         return True
 
 def flood():
     global parsedId
     updateTextField("sd")
-    if justTestIdEntry() and testRequestsEntry("ff") and testThreadsEntry("ff"):
+    if justTestIdEntry() and testTextField("sdf") and testRequestsEntry("ff") and testThreadsEntry("ff"):
         textToSend = textField.get(1.0, "end")
         textToSend = replaceExtraNewLine(textToSend)
-        textToSend = textToSend[:-1]
+        if textToSend[-1:] == '\n':
+            textToSend = textToSend[:-1]
         votes = textToSend.split('\n')
 
         print("Executing: " + str(parsedId))
@@ -205,16 +210,24 @@ def testIdEntryBond(event):
 def testRequestsEntry(arg):
     if requestsEntry.get() == '':
         requestsEntry.focus_set()
+        requestsEntryState.configure(text='<- error', fg="#ff0000")
+        requestsEntryState.update()
         return False
     else:
         threadsEntry.focus_set()
+        requestsEntryState.configure(text='<- Ok', fg="#00ff00")
+        requestsEntryState.update()
         return True
 
 def testThreadsEntry(arg):
     if threadsEntry.get() == '':
         threadsEntry.focus_set()
+        threadsEntryState.configure(text='<- error', fg="#ff0000")
+        threadsEntryState.update()
         return False
     else:
+        threadsEntryState.configure(text='<- Ok', fg="#00ff00")
+        threadsEntryState.update()
         return True
 
 vcmd = (root.register(validate), '%d', '%P')
@@ -232,7 +245,8 @@ idTesting = tk.Label(root, text="Testing...", fg="#fca503")
 textField = tk.Text(root, height=1, width=30, highlightthickness='0', borderwidth=2, relief="sunken")
 textField.bind("<KeyRelease>", resizeTextField)
 textField.bind("<FocusOut>", updateTextField)
-
+textFieldState = tk.Label(root, text='')
+textFieldState.grid(row=2, column=2)
 
 idEntry.grid(row=0, column=1)
 idEntry.focus_set()
@@ -243,7 +257,11 @@ tk.Label(root, text="Requests: ").grid(row=3)
 tk.Label(root, text="Threads: ").grid(row=4)
 
 requestsEntry = tk.Entry(root, validate='key', validatecommand=vcmd, width=23, highlightthickness=0, borderwidth=2, relief="sunken")
+requestsEntryState = tk.Label(root, text='')
+requestsEntryState.grid(row=3, column=2)
 threadsEntry = tk.Entry(root, validate='key', validatecommand=vcmd, width=23, highlightthickness=0, borderwidth=2, relief="sunken")
+threadsEntryState = tk.Label(root, text='')
+threadsEntryState.grid(row=4, column=2)
 perWordView = tk.Checkbutton(root, text="Requests per word?", onvalue = True, offvalue = False, height=5, width = 20, var=perWord)
 perWord.set(True)
 
