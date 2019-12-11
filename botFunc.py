@@ -21,6 +21,7 @@ class Bot:
     _thread = __import__('_thread')
     time = __import__('time')
     def __init__(self, parsedId, voteText, threads, numberOfRequests, perWord):
+        print(repr(perWord))
         self.parsedId = parsedId
         self.voteText = voteText
         self.threads = threads
