@@ -1,5 +1,7 @@
+from botFunc import Bot
 import tkinter as tk
 import requests
+
 
 parsedId = ""
 
@@ -79,29 +81,44 @@ def updateTextField(event):
     textField.update()
 
 def flood():
+    global parsedId
     updateTextField("sd")
     textToSend = textField.get(1.0, "end")
     textToSend = replaceExtraNewLine(textToSend)
     textToSend = textToSend[:-1]
     votes = textToSend.split('\n')
+
+    print("Executing: " + str(parsedId))
+    Bot(parsedId, votes, 1, 1, True)
+
 def testIdEntry():
     inputId = idEntry.get()
+    idOk.grid_remove()
+    idOk.update()
+    idNotFound.grid_remove()
+    idNotFound.update()
+    idTesting.grid(row=1, column=1)
+    idTesting.update()
     global parsedId
     try:
         s = requests.get('https://www.menti.com/core/objects/vote_ids/'+str(inputId))
         if s.json()['code'] == 'not_found':
             idOk.grid_remove()
             idNotFound.grid(row=1, column=1)
+            idTesting.update()
             idEntry.focus_set()
         else:
             idOk.grid(row=1, column=1)
             idNotFound.grid_remove()
+            idTesting.update()
             textField.focus_set()
             parsedId = s.json()['id']
-    except KeyError:
+    except KeyError as e:
         idOk.grid(row=1, column=1)
         idNotFound.grid_remove()
+        idTesting.update()
         textField.focus_set()
+        parsedId = s.json()['id']
 def testIdEntryBond(event):
     inputId = idEntry.get()
     idOk.grid_remove()
@@ -110,8 +127,9 @@ def testIdEntryBond(event):
     idNotFound.update()
     idTesting.grid(row=1, column=1)
     idTesting.update()
+    global parsedId
     try:
-        s = grequests.get('https://www.menti.com/core/objects/vote_ids/'+str(inputId))
+        s = requests.get('https://www.menti.com/core/objects/vote_ids/'+str(inputId))
         if s.json()['code'] == 'not_found':
             idOk.grid_remove()
             idTesting.grid_remove()
@@ -122,12 +140,16 @@ def testIdEntryBond(event):
             idOk.grid(row=1, column=1)
             idNotFound.grid_remove()
             textField.focus_set()
-    except KeyError:
+            parsedId = s.json()['id']
+    except KeyError as e:
         idTesting.grid_remove()
         idOk.grid(row=1, column=1)
         idNotFound.grid_remove()
         textField.focus_set()
-    except Exception:
+        parsedId = s.json()['id']
+    except Exception as e:
+        print("important error")
+        print(e)
         idOk.grid_remove()
         idTesting.grid_remove()
         idNotFound.grid(row=1, column=1)
