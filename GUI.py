@@ -1,6 +1,8 @@
 from botFunc import Bot
-import tkinter as tk
+from mttkinter import mtTkinter as tk
 import requests
+import threading
+import time
 
 
 root = tk.Tk()
@@ -112,6 +114,8 @@ def testTextField(arg):
 def flood():
     global parsedId
     updateTextField("sd")
+    floodBtn.configure(state="disabled")
+    floodBtn.update()
     if justTestIdEntry() and testTextField("sdf") and testRequestsEntry("ff") and testThreadsEntry("ff"):
         textToSend = textField.get(1.0, "end")
         textToSend = replaceExtraNewLine(textToSend)
@@ -120,7 +124,16 @@ def flood():
         votes = textToSend.split('\n')
 
         print("Executing: " + str(parsedId))
-        Bot(parsedId, votes, eval(threadsEntry.get()), eval(requestsEntry.get()), perWord.get()) # TODO: perWord is never changed
+        t = threading.Thread(target=(lambda: checkFlood("Check thread", )))
+        Bot(t, parsedId, votes, eval(threadsEntry.get()), eval(requestsEntry.get()), perWord.get()) # TODO: perWord is never changed
+    else:
+        floodBtn.configure(state="normal")
+        floodBtn.update()
+
+def checkFlood(threadName):
+    floodBtn.configure(state="normal")
+    floodBtn.update()
+
 
 def testIdEntry():
     textField.focus_set()
@@ -287,7 +300,8 @@ threadsEntry.grid(row=4, column=1)
 perWordView.grid(row=5, column=2)
 
 
-tk.Button(root,
-          text='flood', command=flood).grid(row=5, column=1)
+floodBtn = tk.Button(root,
+          text='flood', command=flood)
+floodBtn.grid(row=5, column=1)
 
 tk.mainloop()

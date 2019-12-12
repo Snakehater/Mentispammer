@@ -14,6 +14,7 @@ class Bot:
     voteText = []
     parsedId = ""
     parsedKey = ""
+    done = False
 
     json = __import__('json')
     grequests = __import__('grequests')
@@ -37,6 +38,10 @@ class Bot:
                 barStrList[idx] = '#'
             barStr = ''.join(barStrList)
             self.logText.configure(text=barStr)
+
+        if self.percentage == 100.0:
+            self.stop()
+            
     def printw(self, string):
         # self.addText(string)
         # self.root.after(5000, lambda: self.addText(string))
@@ -45,8 +50,9 @@ class Bot:
         old = self.logText.cget("text")
         new = old+"\n"+string
         self.logText.configure(text=new)
-    def __init__(self, parsedId, voteText, threads, numberOfRequests, perWord):
-        print(repr(perWord))
+    def __init__(self, threadToCall, parsedId, voteText, threads, numberOfRequests, perWord):
+        self.threadToCall = threadToCall
+        self.done = False
         self.parsedId = parsedId
         self.voteText = voteText
         self.threads = threads
@@ -57,16 +63,33 @@ class Bot:
 
         self.root = self.tk.Tk()
 
+        self.root.bind("<Destroy>", self.destroy)
+
         self.logLabel = self.tk.LabelFrame(self.root, text="0%")
 
         self.logText=self.tk.Label(self.logLabel, text='__________', height=1, width=10, anchor='nw', justify='left')
-        self.logLabel.pack(padx=10, pady=10)
+        self.logLabel.pack(padx=10, pady=10, side='top')
         self.logText.pack()
+
+        self.stopBtn = self.tk.Button(self.root, text='Stop', command=(lambda: self.stop()))
+        self.stopBtn.pack(side='bottom')
 
         self.startThreads()
 
         self.tk.mainloop()
 
+    def destroy(self, event):
+        self.stop()
+
+    def stop(self):
+        self.done = True
+        self.stopBtn.update()
+        # self.time.sleep(2)
+        self.root.destroy()
+        self.callThread()
+        # self.exit()
+    def callThread(self):
+        self.threadToCall.start()
 
     # def defNew(voteTextIn, threadsIn, numberOfRequestsIn, numberOfRequestsMultiIn, requestCountIn, requestDoneCountIn):
     #     reset()
@@ -119,7 +142,7 @@ class Bot:
         # global voteIdx
         # global voteText
         # global requestDoneCount
-        while self.requestCount < self.numberOfRequests:
+        while self.requestCount < self.numberOfRequests and self.done is False:
             self.requestCount += 1
             if self.voteIdx == len(self.voteText):
                 self.voteIdx = 0
