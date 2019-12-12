@@ -28,8 +28,9 @@ pip3 install -U git+https://github.com/metachris/py2app.git@master
 <br><br>
 py2applet --make-setup GUI.py
 <br>
+or:
 <br>
-create python script:<br>
+create python script by yourself:<br><br>
 from setuptools import setup<br>
 <br>
 APP = ['GUI.py']<br>
