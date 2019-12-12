@@ -55,24 +55,35 @@ textFieldHeight = 1
 
 def configureTextField(event):
     global textFieldHeight
-    if event.keysym == 'Return' or event.keysym == 'BackSpace':
-        textString = textField.get(1.0, "end")
-        textString = textString[:-1]
-        startLength = len(textString)
-        if len(textString) > 0:
-            if textString[0] == '\n':
-                textString = textString[1:]
-            if len(textString) > 1:
-                if textString[-1] == '\n':
-                    if textString[-2] == '\n':
-                        textString = textString[:-1]
-        # textString = replaceDoubleNewLine(textString)
-        if len(textString) != startLength or textString.count('\n') + 1 != textFieldHeight:
-            textField.delete(0.0, tk.END)
-            textField.insert(tk.INSERT, textString)
-            textField.configure(height=textString.count('\n') + 1)
-            textField.update()
-            textFieldHeight = textString.count('\n') + 1
+    textString = textField.get(1.0, "end")
+    textString = textString[:-1]
+    if  textString.count('\t') != 0:
+        textField.delete(0.0, tk.END)
+        textField.insert(tk.INSERT, textString.replace('\t', ''))
+        textField.configure(height=textString.count('\n') + 1)
+        textField.update()
+    if event.keysym == 'Tab':
+        requestsEntry.focus_set()
+        testTextField("")
+    else:
+        if event.keysym == 'Return' or event.keysym == 'BackSpace':
+            textString = textField.get(1.0, "end")
+            textString = textString[:-1]
+            startLength = len(textString)
+            if len(textString) > 0:
+                if textString[0] == '\n':
+                    textString = textString[1:]
+                if len(textString) > 1:
+                    if textString[-1] == '\n':
+                        if textString[-2] == '\n':
+                            textString = textString[:-1]
+            # textString = replaceDoubleNewLine(textString)
+            if len(textString) != startLength or textString.count('\n') + 1 != textFieldHeight:
+                textField.delete(0.0, tk.END)
+                textField.insert(tk.INSERT, textString)
+                textField.configure(height=textString.count('\n') + 1)
+                textField.update()
+                textFieldHeight = textString.count('\n') + 1
 def updateTextField(event):
     textString = textField.get(1.0, "end")
     textString = textString[:-1]

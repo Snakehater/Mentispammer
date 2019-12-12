@@ -20,6 +20,31 @@ class Bot:
     requests = __import__('requests')
     _thread = __import__('_thread')
     time = __import__('time')
+    mttkinter = __import__('mttkinter')
+    tk = mttkinter.mtTkinter
+    threading = __import__('threading')
+    math = __import__('math')
+    def updateProgress(self):
+        self.percentage = round(100*(self.requestDoneCount/self.numberOfRequests), 1)
+        print(self.percentage)
+
+        oldLabel = self.logLabel.cget("text")
+        if oldLabel != str(self.percentage) + '%':
+            self.logLabel.configure(text=(str(self.percentage) + '%'))
+            barStr ='__________'
+            barStrList = list(barStr)
+            for idx in range(self.math.floor(self.percentage/10)):
+                barStrList[idx] = '#'
+            barStr = ''.join(barStrList)
+            self.logText.configure(text=barStr)
+    def printw(self, string):
+        # self.addText(string)
+        # self.root.after(5000, lambda: self.addText(string))
+        pass
+    def addText(self, string):
+        old = self.logText.cget("text")
+        new = old+"\n"+string
+        self.logText.configure(text=new)
     def __init__(self, parsedId, voteText, threads, numberOfRequests, perWord):
         print(repr(perWord))
         self.parsedId = parsedId
@@ -29,7 +54,18 @@ class Bot:
         if perWord:
             self.numberOfRequests *= len(self.voteText)
 
+
+        self.root = self.tk.Tk()
+
+        self.logLabel = self.tk.LabelFrame(self.root, text="0%")
+
+        self.logText=self.tk.Label(self.logLabel, text='__________', height=1, width=10, anchor='nw', justify='left')
+        self.logLabel.pack(padx=10, pady=10)
+        self.logText.pack()
+
         self.startThreads()
+
+        self.tk.mainloop()
 
 
     # def defNew(voteTextIn, threadsIn, numberOfRequestsIn, numberOfRequestsMultiIn, requestCountIn, requestDoneCountIn):
@@ -62,7 +98,7 @@ class Bot:
 
         identifier = self.json.loads(content)['identifier']
 
-        print(identifier)
+        self.printw(identifier)
         headers = {'accept': 'application/json','accept-encoding': 'gzip, deflate, br','accept-language': 'en-US,en;q=0.9','content-lengt': '42','content-type': 'application/json; charset=UTF-8','cookie': '_ga=GA1.2.1555705289.1573573495; _fbp=fb.1.1573573435740.1944003412; identifier1='+identifier+'; _gid=GA1.2.1316845992.1575545568; _gat=1; _gat_UA-23693781-9=1; _gat_UA-23693781-3=1','origin': 'https://www.menti.com','referer': 'https://www.menti.com/'+self.parsedId,'sec-fetch-mode': 'cors','sec-fetch-site': 'same-origin','user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36 OPR/65.0.3467.48','x-identifier': identifier}
 
         # print(headers)
@@ -72,13 +108,12 @@ class Bot:
         requests = self.grequests.map(rs)
         for response in requests:
             content = response
-        print(content)
+        self.printw(content)
 
 
     # vote(voteText)
 
     def threadFun(self, threadName):
-        print("here")
         # time.sleep(delay)
         # global requestCount
         # global voteIdx
@@ -92,9 +127,10 @@ class Bot:
             text = self.voteText[self.voteIdx]
             self.voteIdx += 1
 
-            print(str(threadName) + " Requests " + str(self.requestCount) + " with " + str(text))
+            self.printw(str(threadName) + " Requests " + str(self.requestCount) + " with " + str(text))
             self.vote(text)
             self.requestDoneCount += 1
+            self.updateProgress()
 
     def startThreads(self):
         s = self.requests.get('https://www.menti.com/core/objects/vote_keys/'+self.parsedId)
@@ -104,7 +140,9 @@ class Bot:
         question = jsondata['questions'][0]
         parsedKey = question['public_key']
         self.parsedKey = parsedKey
-        print("Key: " + str(parsedKey))
+        self.printw("Key: " + str(parsedKey))
         for idx in range(self.threads):
-            self._thread.start_new_thread( self.threadFun, ("Thread-" + str(idx), ) )
+            # self._thread.start_new_thread( self.threadFun, ("Thread-" + str(idx), ) )
+            t = self.threading.Thread(target=(lambda: self.threadFun("Thread-" + str(idx), )))
+            t.start()
             self.time.sleep(0.2)
