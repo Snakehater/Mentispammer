@@ -1,0 +1,1 @@
+/Users/vigor/Desktop/Menti/botFunc.py

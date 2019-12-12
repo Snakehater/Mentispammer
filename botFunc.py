@@ -4,6 +4,8 @@
 # import _thread
 # import time
 
+from tkinter import ttk
+
 class Bot:
     threads = 0
     numberOfRequests = 0
@@ -23,6 +25,8 @@ class Bot:
     time = __import__('time')
     mttkinter = __import__('mttkinter')
     tk = mttkinter.mtTkinter
+    tkinter = __import__('tkinter', globals(), locals(), ['ttk'], 0)
+    ttk = tkinter.ttk
     threading = __import__('threading')
     math = __import__('math')
     def updateProgress(self):
@@ -41,7 +45,7 @@ class Bot:
 
         if self.percentage == 100.0:
             self.stop()
-            
+
     def printw(self, string):
         # self.addText(string)
         # self.root.after(5000, lambda: self.addText(string))
@@ -71,8 +75,8 @@ class Bot:
         self.logLabel.pack(padx=10, pady=10, side='top')
         self.logText.pack()
 
-        self.stopBtn = self.tk.Button(self.root, text='Stop', command=(lambda: self.stop()))
-        self.stopBtn.pack(side='bottom')
+        self.stopBtn = self.ttk.Button(self.root, text='Stop', command=(lambda: self.stop()))
+        self.stopBtn.pack(padx=10, pady=10, side='bottom')
 
         self.startThreads()
 

@@ -1,5 +1,6 @@
 from botFunc import Bot
 from mttkinter import mtTkinter as tk
+from tkinter import ttk
 import requests
 import threading
 import time
@@ -312,7 +313,7 @@ threadsEntry.grid(row=4, column=1)
 perWordView.grid(row=5, column=2)
 
 
-floodBtn = tk.Button(root,
+floodBtn = ttk.Button(root,
           text='flood', command=flood)
 floodBtn.grid(row=5, column=1)
 
