@@ -254,6 +254,18 @@ def testThreadsEntry(arg):
         threadsEntryState.update()
         return True
 
+def testThreadsEntryBond(arg):
+    if threadsEntry.get() == '':
+        threadsEntry.focus_set()
+        threadsEntryState.configure(text='<- error', fg="#ff0000")
+        threadsEntryState.update()
+        return False
+    else:
+        threadsEntryState.configure(text='<- Ok', fg="#00ff00")
+        threadsEntryState.update()
+        flood()
+        return True
+
 vcmd = (root.register(validate), '%d', '%P')
 
 tk.Label(root, text="id: ").grid(row=0)
@@ -292,7 +304,7 @@ perWord.set(True)
 requestsEntry.bind('<Return>', testRequestsEntry)
 # requestsEntry.bind('<FocusOut>', testRequestsEntry)
 
-threadsEntry.bind('<Return>', testThreadsEntry)
+threadsEntry.bind('<Return>', testThreadsEntryBond)
 # threadsEntry.bind('<FocusOut>', testThreadsEntry)
 
 requestsEntry.grid(row=3, column=1)
@@ -303,5 +315,7 @@ perWordView.grid(row=5, column=2)
 floodBtn = tk.Button(root,
           text='flood', command=flood)
 floodBtn.grid(row=5, column=1)
+
+root.title("Menti spammer ;)")
 
 tk.mainloop()
