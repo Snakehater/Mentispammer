@@ -112,13 +112,19 @@ class Bot:
     #     self.voteIdx = 0
 
     def vote(self, voteIn):
+        # voteIn is the text to be voted with
         newdata = {"question_type":"wordcloud","vote":voteIn}
         # s = grequests.post('https://www.govote.at/core/identifier')
         #print(s)
         # identifier = s.json()['identifier']
+
+        # It seems the page rejects GET requests that do not identify a User-Agent.
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+            
         content = ""
-        urls = ['https://www.govote.at/core/identifier']
-        rs = (self.grequests.post(u) for u in urls)
+        # urls = ['https://www.menti.com/core/identifier'] # old
+        urls = ['https://www.menti.com/core/identifiers'] # new
+        rs = (self.grequests.post(u, headers=headers) for u in urls)
         requests = self.grequests.map(rs)
         for response in requests:
             content = response.content
@@ -126,15 +132,17 @@ class Bot:
         identifier = self.json.loads(content)['identifier']
 
         self.printw(identifier)
-        headers = {'accept': 'application/json','accept-encoding': 'gzip, deflate, br','accept-language': 'en-US,en;q=0.9','content-lengt': '42','content-type': 'application/json; charset=UTF-8','cookie': '_ga=GA1.2.1555705289.1573573495; _fbp=fb.1.1573573435740.1944003412; identifier1='+identifier+'; _gid=GA1.2.1316845992.1575545568; _gat=1; _gat_UA-23693781-9=1; _gat_UA-23693781-3=1','origin': 'https://www.menti.com','referer': 'https://www.menti.com/'+self.parsedId,'sec-fetch-mode': 'cors','sec-fetch-site': 'same-origin','user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36 OPR/65.0.3467.48','x-identifier': identifier}
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36', 'accept': 'application/json','accept-encoding': 'gzip, deflate, br','accept-language': 'en-US,en;q=0.9','content-lengt': '42','content-type': 'application/json; charset=UTF-8','cookie': '_ga=GA1.2.1555705289.1573573495; _fbp=fb.1.1573573435740.1944003412; identifier1='+identifier+'; _gid=GA1.2.1316845992.1575545568; _gat=1; _gat_UA-23693781-9=1; _gat_UA-23693781-3=1','origin': 'https://www.menti.com','referer': 'https://www.menti.com/'+self.parsedId,'sec-fetch-mode': 'cors','sec-fetch-site': 'same-origin','user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36 OPR/65.0.3467.48','x-identifier': identifier}
 
         # print(headers)
         content = ""
-        urls2 = ['https://www.govote.at/core/votes/'+self.parsedKey]
+        # urls2 = ['https://www.govote.at/core/votes/'+self.parsedKey] # old
+        urls2 = ['https://www.menti.com/core/votes/'+self.parsedKey] # new
         rs = (self.grequests.post(u, json = newdata, headers = headers) for u in urls2)
         requests = self.grequests.map(rs)
         for response in requests:
             content = response
+        print(content.content)
         self.printw(content)
 
 
@@ -154,13 +162,19 @@ class Bot:
             text = self.voteText[self.voteIdx]
             self.voteIdx += 1
 
+            # vote vvv
+
             self.printw(str(threadName) + " Requests " + str(self.requestCount) + " with " + str(text))
             self.vote(text)
             self.requestDoneCount += 1
             self.updateProgress()
 
     def startThreads(self):
-        s = self.requests.get('https://www.menti.com/core/objects/vote_keys/'+self.parsedId)
+        # It seems the page rejects GET requests that do not identify a User-Agent.
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        
+        # s = self.requests.get('https://www.menti.com/core/objects/vote_keys/'+self.parsedId, headers=headers) # old
+        s = self.requests.get('https://www.menti.com/core/vote-keys/'+self.parsedId+'/series', headers=headers) # new
 
         string = s.text
         jsondata = self.json.loads(string)

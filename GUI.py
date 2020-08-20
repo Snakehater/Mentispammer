@@ -4,6 +4,7 @@ from tkinter import ttk
 import requests
 import threading
 import time
+import json
 
 
 root = tk.Tk()
@@ -156,7 +157,10 @@ def justTestIdEntry():
         idTesting.update()
         global parsedId
         try:
-            s = requests.get('https://www.menti.com/core/objects/vote_ids/'+str(inputId))
+            # s = requests.get('https://www.menti.com/core/objects/vote_ids/'+str(inputId)) # old
+            # It seems the page rejects GET requests that do not identify a User-Agent.
+            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+            s = requests.get('https://www.menti.com/core/vote-ids/' + str(inputId) + '/series?page=voting_web_first', headers=headers) #new
             if s.json()['code'] == 'not_found':
                 idOk.grid_remove()
                 idTesting.grid_remove()
@@ -178,7 +182,7 @@ def justTestIdEntry():
             parsedId = s.json()['id']
             return True
         except Exception as e:
-            print("important error")
+            print("important error 1")
             print(e)
             idOk.grid_remove()
             idTesting.grid_remove()
@@ -202,7 +206,10 @@ def testIdEntryBond(event):
         idTesting.update()
         global parsedId
         try:
-            s = requests.get('https://www.menti.com/core/objects/vote_ids/'+str(inputId))
+            # s = requests.get('https://www.menti.com/core/objects/vote_ids/'+str(inputId)) # old
+            # It seems the page rejects GET requests that do not identify a User-Agent.
+            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+            s = requests.get('https://www.menti.com/core/vote-ids/' + str(inputId) + '/series?page=voting_web_first', headers=headers) #new
             if s.json()['code'] == 'not_found':
                 idOk.grid_remove()
                 idTesting.grid_remove()
@@ -224,7 +231,7 @@ def testIdEntryBond(event):
             parsedId = s.json()['id']
             return True
         except Exception as e:
-            print("important error")
+            print("important error 2")
             print(e)
             idOk.grid_remove()
             idTesting.grid_remove()
